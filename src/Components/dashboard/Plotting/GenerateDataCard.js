@@ -27,7 +27,7 @@ export function GenerateDataCard({dataToDisplay}) {
           bgcolor: "#42a5f5",
           position: "relative",
           overflow: "auto",
-          maxHeight: 600,
+          maxHeight: 400,
           "& ul": { padding: 0 },
         }}
       >
