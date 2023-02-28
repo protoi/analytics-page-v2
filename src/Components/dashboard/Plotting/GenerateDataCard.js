@@ -9,13 +9,16 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-export function GenerateDataCard({dataToDisplay}) {
+export function GenerateDataCard({ dataToDisplay }) {
+  console.log(dataToDisplay);
   return (
     <Paper
       elevation={3}
       style={{
         width: "100%",
         backgroundColor: "#42a5f5",
+        height: "100%",
+        overflow: "scroll",
         // maxHeight: "100%",
         // overflow: "auto",
         // outline: "1px green solid",
@@ -27,16 +30,24 @@ export function GenerateDataCard({dataToDisplay}) {
           bgcolor: "#42a5f5",
           position: "relative",
           overflow: "auto",
-          maxHeight: 400,
+          // maxHeight: 400,
           "& ul": { padding: 0 },
         }}
       >
         {dataToDisplay.map((element, index) => {
+          console.log(`element  ----->`);
+          console.log(element);
           return (
             <>
               <Accordion
                 key={index}
-                sx={{ backgroundColor: "#1976d2", color: "white" }}
+                sx={{
+                  backgroundColor:
+                    element.EntityIntent_tuple.intents === "message.error"
+                      ? "orange"
+                      : "#1976d2",
+                  color: "white",
+                }}
               >
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -47,7 +58,7 @@ export function GenerateDataCard({dataToDisplay}) {
                     align="left"
                     sx={{ padding: "3%", color: "white" }}
                   >
-                    {element.intent}
+                    {element.EntityIntent_tuple.intents}
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -55,7 +66,10 @@ export function GenerateDataCard({dataToDisplay}) {
                     elevation={3}
                     style={{
                       width: "100%",
-                      backgroundColor: "#42a5f5",
+                      backgroundColor:
+                        element.EntityIntent_tuple.intents === "message.error"
+                          ? "#d9825f"
+                          : "#42a5f5",
                     }}
                   >
                     <div>
@@ -68,73 +82,91 @@ export function GenerateDataCard({dataToDisplay}) {
                         <p>
                           <u>Time Stamp:</u>
                           <br></br>
-                          {element.timestamp}
+                          {element.Time_Stamp}
                         </p>
                         <Divider />
                         <p>
                           <u>Intent:</u>
                           <br></br>
-                          {element.intent}
+                          {element.EntityIntent_tuple.intents}
                         </p>
-                        {element.genre !== null && element.genre.length > 0 && (
-                          <>
-                            <Divider />
-                            <p>
-                              <u>Genre:</u>
-                              <br></br>
-                              {element.genre.join(", ")}
-                            </p>
-                          </>
-                        )}
-                        {element.actor !== null && element.actor.length > 0 && (
-                          <>
-                            <Divider />
-                            <p>
-                              <u>Cast:</u>
-                              <br></br>
-                              {element.actor.join(", ")}
-                            </p>
-                          </>
-                        )}
-                        {element.daterange !== null &&
-                          element.daterange.length > 0 && (
+                        {element.EntityIntent_tuple.entities.genre !== null &&
+                          element.EntityIntent_tuple.entities.genre.length >
+                            0 && (
+                            <>
+                              <Divider />
+                              <p>
+                                <u>Genre:</u>
+                                <br></br>
+                                {element.EntityIntent_tuple.entities.genre.join(
+                                  ", "
+                                )}
+                              </p>
+                            </>
+                          )}
+                        {element.EntityIntent_tuple.entities.actor !== null &&
+                          element.EntityIntent_tuple.entities.actor.length >
+                            0 && (
+                            <>
+                              <Divider />
+                              <p>
+                                <u>Cast:</u>
+                                <br></br>
+                                {element.EntityIntent_tuple.entities.actor.join(
+                                  ", "
+                                )}
+                              </p>
+                            </>
+                          )}
+                        {element.EntityIntent_tuple.entities.daterange !==
+                          null &&
+                          element.EntityIntent_tuple.entities.daterange.length >
+                            0 && (
                             <>
                               <Divider />
                               <p>
                                 <u>Year Requested:</u>
                                 <br></br>
-                                {element.daterange[0]}
+                                {
+                                  element.EntityIntent_tuple.entities
+                                    .daterange[0]
+                                }
                               </p>
                             </>
                           )}
-                        {element.moviename !== null &&
-                          element.moviename.length > 0 && (
+                        {element.EntityIntent_tuple.entities.moviename !==
+                          null &&
+                          element.EntityIntent_tuple.entities.moviename.length >
+                            0 && (
                             <>
                               <Divider />
                               <p>
                                 <u>Movie Mentioned:</u>
                                 <br></br>
-                                {element.moviename[0]}
+                                {
+                                  element.EntityIntent_tuple.entities
+                                    .moviename[0]
+                                }
                               </p>
                             </>
                           )}
-                        {element.actual_message !== null && (
+                        {element.Query_Message !== null && (
                           <>
                             <Divider />
                             <p>
                               <u>User Message:</u>
                               <br></br>
-                              {element.actual_message}
+                              {element.Query_Message}
                             </p>
                           </>
                         )}
-                        {element.response_message !== null && (
+                        {element.Response_Body !== null && (
                           <>
                             <Divider />
                             <p>
                               <u>Response:</u>
                               <br></br>
-                              {element.response_message}
+                              {element.Response_Body}
                             </p>
                           </>
                         )}

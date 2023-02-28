@@ -22,7 +22,7 @@ import Chart from "./Chart";
 import Deposits from "./Deposits";
 import Orders from "./Orders";
 import { IntentContainerGrid } from "./Plotting/IntentChart";
-import { GraphContainerGrid } from "./Plotting/GraphContainer";
+import { GraphContainerGrid, GraphContainer } from "./Plotting/GraphContainer";
 import { OnBoardingGrid } from "./OnBoarding";
 import {
   createBrowserRouter,
@@ -175,36 +175,14 @@ function DashboardContent({ substance_to_render }) {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-              {/* Chart */}
-              {substance_to_render === "TIME_MAPPING" && <GraphContainerGrid />}
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4, outline: "1px solid green"}}>
+            {/* <Grid container spacing={3} sx={{height: "100%", overflow: "auto", outline: "1px green solid"}}> */}
+              {substance_to_render === "TIME_MAPPING" && <GraphContainer />}
               {substance_to_render === "INTENT_MAPPING" && (
                 <IntentContainerGrid />
               )}
-
               {substance_to_render === "ONBOARDING" && <OnBoardingGrid />}
-
-              {/* Recent Deposits */}
-              {/* <Grid item xs={12} md={4} lg={3}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: 240,
-                  }}
-                >
-                  <Deposits />
-                </Paper>
-              </Grid> */}
-              {/* Recent Orders */}
-              {/* <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Orders />
-                </Paper>
-              </Grid> */}
-            </Grid>
+            {/* </Grid> */}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>

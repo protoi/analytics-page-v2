@@ -5,6 +5,9 @@ import { ButtonGroup } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TimeGraph from "./TimeGraph";
+import MonthlyGraph from "./MonthlyGraph";
+import DailyGraph from "./DailyGraph";
+import DetailedGraph from "./DetailedGraph";
 import HourlyBubbleGraph from "./HourlyBubbleGraph";
 
 import TextField from "@mui/material/TextField";
@@ -13,7 +16,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import dayjs from "dayjs";
 
-const jump_mapping = { weekly: null, daily: "weekly", hourly: "daily" };
+const jump_mapping = { MONTHLY: null, DAILY: "MONTHLY", DETAILED: "DAILY" };
 
 function extract_minute_from_date(time_data) {
   return parseInt(time_data.substring(14, 16));
@@ -64,12 +67,33 @@ export function GraphContainer() {
   let [dateSelected, setDateSelected] = useState(new Date());
   let [weeklyGraphClickedIndex, setWeeklyGraphClickedIndex] = useState(null);
   let [dailyGraphClickedIndex, setDailyGraphClickedIndex] = useState(null);
-  let [stateOfGraph, setStateOfGraph] = useState("weekly");
+  let [stateOfGraph, setStateOfGraph] = useState("MONTHLY");
+
+  let [MONTHLYGraphClickedIndex, setMONTHLYGraphClickedIndex] = useState(null);
+  let [DAILYGraphClickedIndex, setDAILYGraphClickedIndex] = useState(null);
+  let [DETAILEDGraphClickedIndex, setDETAILEDGraphClickedIndex] =
+    useState(null);
 
   // Effects
   useEffect(() => {
     let yyyy_mm_dd_Date_string = dayjs(dateSelected).format("YYYY/MM/DD");
-    axios
+    async function fetch_JSON_data() {
+      fetch("./datagen/sample_data.json", {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((response_json) => {
+          console.log(response_json);
+          setData(response_json);
+        })
+        .catch((e) => {
+          console.log(e.message);
+        });
+    }
+    /* axios
       .get(
         `https://movie-bot-backend-mkh6s9erg-ghutoon.vercel.app/query/group_queries_by_date_week?date=${yyyy_mm_dd_Date_string}`
       )
@@ -80,7 +104,8 @@ export function GraphContainer() {
       })
       .catch((err) => {
         console.log(err.message);
-      });
+      }); */
+    fetch_JSON_data();
   }, [dateSelected]);
 
   function handleWeeklyGraphClickedIndex(index) {
@@ -115,11 +140,36 @@ export function GraphContainer() {
     setDateSelected(newDateSelected);
   };
 
+  function handleMONTHLYGraphClickedIndex(index) {
+    console.log(`clicked index on the MONTHLY graph was: ${index}`);
+    // setDailyGraphClickedIndex(index);
+    setMONTHLYGraphClickedIndex(index);
+    if (
+      data[index]["monthly_queries"] != null &&
+      data[index]["monthly_queries"].length > 0
+    ) {
+      setStateOfGraph("DAILY");
+    }
+  }
+
+  function handleDAILYGraphClickedIndex(index) {
+    console.log(`clicked index on the DAILY graph was: ${index}`);
+    // setDailyGraphClickedIndex(index);
+    setDAILYGraphClickedIndex(index);
+    if (
+      data[MONTHLYGraphClickedIndex]["monthly_queries"][index][
+        "daily_queries"
+      ] != null &&
+      data[MONTHLYGraphClickedIndex]["monthly_queries"][index]["daily_queries"]
+        .length > 0
+    ) {
+      setStateOfGraph("DETAILED");
+    }
+  }
+
   return (
     <Container>
       <Box>
-        {/* add 3 buttons, one for back and 2 for left and right navigation */}
-        {/* have 2 buttons, date picker spawns when stateOfGraph == weekly, else a back button will spawn*/}
         {stateOfGraph !== "weekly" && (
           <Button variant="contained" onClick={handleBackButtonClick}>
             Back
@@ -134,40 +184,41 @@ export function GraphContainer() {
         )}
       </Box>
 
-      <Box display="flex" justifyContent="center" alignItems="center">
-        {stateOfGraph === "weekly" && (
-          <TimeGraph
+      <Box>
+        {stateOfGraph === "MONTHLY" && (
+          <MonthlyGraph
             data_to_plot={data}
-            x_axis_param={"day"}
-            y_axis_param={"queries"}
-            title_text={"Queries over the Week"}
-            handleClickPassedFromParent={handleWeeklyGraphClickedIndex}
+            x_axis_param={"month"}
+            y_axis_param={"monthly_query_count"}
+            title_text={"Monthly Queries"}
+            handleClickPassedFromParent={handleMONTHLYGraphClickedIndex}
           />
         )}
-        {stateOfGraph === "daily" && (
-          <TimeGraph
-            data_to_plot={data[weeklyGraphClickedIndex]["daily_queries"]}
-            x_axis_param={"hour"}
-            y_axis_param={"queries"}
-            title_text={"Queries over the Day"}
-            interval={6}
-            handleClickPassedFromParent={handleDailyGraphClickedIndex}
+
+        {stateOfGraph === "DAILY" && (
+          <DailyGraph
+            data_to_plot={data[MONTHLYGraphClickedIndex]["monthly_queries"]}
+            key_to_isolate={"message.error"}
+            actual_data={"daily_queries"}
+            x_axis_param_actual={"non-error"}
+            x_axis_param_error={"error"}
+            y_axis_param={"daily_query_count"}
+            title_text={"Daily Queries"}
+            handleClickPassedFromParent={handleDAILYGraphClickedIndex}
           />
         )}
-        {stateOfGraph === "hourly" && (
-          <HourlyBubbleGraph
-            data_to_plot={group_data_by_hour(
-              data[weeklyGraphClickedIndex]["daily_queries"][
-                dailyGraphClickedIndex
-              ]["hourly_queries"]
-            )}
-            x_axis_param={"minute"}
-            y_axis_param={"queries"}
-            title_text={"Queries over the Hour"}
-            // handleClickPassedFromParent={handleHourlyGraphClickedIndex}
+
+        {stateOfGraph === "DETAILED" && (
+          <DetailedGraph
+            data_to_plot={
+              data[MONTHLYGraphClickedIndex]["monthly_queries"][
+                DAILYGraphClickedIndex
+              ]["daily_queries"]
+            }
+            title_text={"Detailed Queries"}
+            handleClickPassedFromParent={null}
           />
         )}
-        {/* </Box> */}
       </Box>
     </Container>
   );
@@ -183,18 +234,20 @@ export function GraphContainer() {
 
 export function GraphContainerGrid() {
   return (
-    <Grid item xs={12} md={12} lg={12}>
-      <Paper
-        sx={{
-          p: 2,
-          display: "flex",
-          flexDirection: "column",
-          height: 800,
-        }}
-      >
-        {/* <Chart /> */}
-        <GraphContainer />
-      </Paper>
-    </Grid>
+    <>
+      {/* <Grid item xs={12} md={12} lg={12}> */}
+      {/* <Paper
+          sx={{
+            p: 2,
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            outline: "1px solid red",
+          }}
+        > */}
+      <GraphContainer />
+      {/* </Paper> */}
+      {/* </Grid> */}
+    </>
   );
 }
