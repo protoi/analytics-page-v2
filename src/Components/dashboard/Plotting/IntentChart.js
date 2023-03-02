@@ -24,7 +24,6 @@ function color_maker(hexval, offset) {
   return `#${((hexval + offset * 8 + offset * 4) % 16777216).toString(16)}`;
 }
 
-
 export function IntentContainerGrid() {
   //States
   let [data, setData] = useState(null); //array
@@ -40,7 +39,7 @@ export function IntentContainerGrid() {
   useEffect(() => {
     axios
       .get(
-        `https://movie-bot-backend-mkh6s9erg-ghutoon.vercel.app/query/group_documents_by_intents`
+        `https://movie-bot-backend-lt04kxls0-ghutoon.vercel.app/query/group_documents_by_intents`
       )
       .then((res) => {
         let restructured_data = res.data.map((d) => {
@@ -132,7 +131,7 @@ export function IntentContainerGrid() {
 
   return (
     <>
-      <Grid item xs={12} md={12} lg={6} xl={6}>
+      <Grid item xs={12} md={6} lg={6} xl={6}>
         <Paper
           sx={{
             p: 2,

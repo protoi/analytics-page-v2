@@ -35,17 +35,49 @@ export function GenerateDataCard({ dataToDisplay }) {
         }}
       >
         {dataToDisplay.map((element, index) => {
-          console.log(`element  ----->`);
-          console.log(element);
+          let msg_intent = null,
+            msg_genres = null,
+            msg_actor = null,
+            msg_movie = null,
+            msg_daterange = null,
+            msg_timestamp = element.Time_Stamp,
+            msg_verbatim = element.Query_Message,
+            msg_response = element.Response_Body,
+            msg_phone_num = element.Destination_Phone_number,
+            msg_score = element.EntityIntent_tuple.score;
+          let card_fgcolor =
+              msg_intent === "message.error" ? "#d9825f" : "#42a5f5",
+            card_bgcolor =
+              msg_intent === "message.error" ? "orange" : "#1976d2";
+
+          if (element.EntityIntent_tuple != null) {
+            msg_intent = element.EntityIntent_tuple.intents;
+            msg_genres =
+              element.EntityIntent_tuple.entities.genre !== null
+                ? element.EntityIntent_tuple.entities.genre.join(", ")
+                : null;
+            msg_actor =
+              element.EntityIntent_tuple.entities.actor !== null
+                ? element.EntityIntent_tuple.entities.actor.join(", ")
+                : null;
+            msg_movie =
+              element.EntityIntent_tuple.entities.moviename !== null
+                ? element.EntityIntent_tuple.entities.moviename[0]
+                : null;
+            msg_daterange =
+              element.EntityIntent_tuple.entities.daterange != null
+                ? element.EntityIntent_tuple.entities.daterange[0]
+                : null;
+          }
+
+          // console.log(`element  ----->`);
+          // console.log(element);
           return (
             <>
               <Accordion
                 key={index}
                 sx={{
-                  backgroundColor:
-                    element.EntityIntent_tuple.intents === "message.error"
-                      ? "orange"
-                      : "#1976d2",
+                  backgroundColor: card_bgcolor,
                   color: "white",
                 }}
               >
@@ -66,10 +98,7 @@ export function GenerateDataCard({ dataToDisplay }) {
                     elevation={3}
                     style={{
                       width: "100%",
-                      backgroundColor:
-                        element.EntityIntent_tuple.intents === "message.error"
-                          ? "#d9825f"
-                          : "#42a5f5",
+                      backgroundColor: card_fgcolor,
                     }}
                   >
                     <div>
@@ -80,95 +109,53 @@ export function GenerateDataCard({ dataToDisplay }) {
                         sx={{ color: "white" }}
                       >
                         <p>
+                          <u>Phone No: </u> {msg_phone_num}
+                        </p>
+                        <p>
+                          <u>Time: </u> {msg_timestamp}
+                        </p>
+                        <p>
+                          <u>Intent: </u> {msg_intent}
+                          <br />
+                          <u>Probability: </u>{" "}
+                          {msg_score.slice(0, Math.min(msg_score.length, 4))}
+                        </p>
+                        <p>
                           <u>Time Stamp:</u>
                           <br></br>
-                          {element.Time_Stamp}
+                          {msg_timestamp}
                         </p>
-                        <Divider />
                         <p>
-                          <u>Intent:</u>
-                          <br></br>
-                          {element.EntityIntent_tuple.intents}
+                          <u>Verbatim: </u>
+                          {msg_verbatim}
                         </p>
-                        {element.EntityIntent_tuple.entities.genre !== null &&
-                          element.EntityIntent_tuple.entities.genre.length >
-                            0 && (
-                            <>
-                              <Divider />
-                              <p>
-                                <u>Genre:</u>
-                                <br></br>
-                                {element.EntityIntent_tuple.entities.genre.join(
-                                  ", "
-                                )}
-                              </p>
-                            </>
-                          )}
-                        {element.EntityIntent_tuple.entities.actor !== null &&
-                          element.EntityIntent_tuple.entities.actor.length >
-                            0 && (
-                            <>
-                              <Divider />
-                              <p>
-                                <u>Cast:</u>
-                                <br></br>
-                                {element.EntityIntent_tuple.entities.actor.join(
-                                  ", "
-                                )}
-                              </p>
-                            </>
-                          )}
-                        {element.EntityIntent_tuple.entities.daterange !==
-                          null &&
-                          element.EntityIntent_tuple.entities.daterange.length >
-                            0 && (
-                            <>
-                              <Divider />
-                              <p>
-                                <u>Year Requested:</u>
-                                <br></br>
-                                {
-                                  element.EntityIntent_tuple.entities
-                                    .daterange[0]
-                                }
-                              </p>
-                            </>
-                          )}
-                        {element.EntityIntent_tuple.entities.moviename !==
-                          null &&
-                          element.EntityIntent_tuple.entities.moviename.length >
-                            0 && (
-                            <>
-                              <Divider />
-                              <p>
-                                <u>Movie Mentioned:</u>
-                                <br></br>
-                                {
-                                  element.EntityIntent_tuple.entities
-                                    .moviename[0]
-                                }
-                              </p>
-                            </>
-                          )}
-                        {element.Query_Message !== null && (
-                          <>
-                            <Divider />
-                            <p>
-                              <u>User Message:</u>
-                              <br></br>
-                              {element.Query_Message}
-                            </p>
-                          </>
+                        <p>
+                          <u>Response: </u> {msg_response}
+                        </p>
+                        {msg_intent !== "error.message" && <Divider />}
+                        {msg_movie && (
+                          <p>
+                            <u>Movie: </u>
+                            {msg_movie}
+                          </p>
                         )}
-                        {element.Response_Body !== null && (
-                          <>
-                            <Divider />
-                            <p>
-                              <u>Response:</u>
-                              <br></br>
-                              {element.Response_Body}
-                            </p>
-                          </>
+                        {msg_actor && (
+                          <p>
+                            <u>Actors: </u>
+                            {msg_actor}
+                          </p>
+                        )}
+                        {msg_genres && (
+                          <p>
+                            <u>Genres: </u>
+                            {msg_genres}
+                          </p>
+                        )}
+                        {msg_daterange && (
+                          <p>
+                            <u>Date Range: </u>
+                            {msg_daterange}
+                          </p>
                         )}
                       </Typography>
                     </div>

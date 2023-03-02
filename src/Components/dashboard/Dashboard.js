@@ -30,6 +30,7 @@ import {
   Route,
   Link as ROUTER_Link,
 } from "react-router-dom";
+import { IntentContainerGrid_v2 } from "./Plotting/IntentGraph_v2";
 
 function Copyright(props) {
   return (
@@ -175,13 +176,16 @@ function DashboardContent({ substance_to_render }) {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4, outline: "1px solid green"}}>
+          <Container
+            maxWidth="lg"
+            sx={{ mt: 4, mb: 4, outline: "1px solid green" }}
+          >
             {/* <Grid container spacing={3} sx={{height: "100%", overflow: "auto", outline: "1px green solid"}}> */}
-              {substance_to_render === "TIME_MAPPING" && <GraphContainer />}
-              {substance_to_render === "INTENT_MAPPING" && (
-                <IntentContainerGrid />
-              )}
-              {substance_to_render === "ONBOARDING" && <OnBoardingGrid />}
+            {substance_to_render === "TIME_MAPPING" && <GraphContainer />}
+            {substance_to_render === "INTENT_MAPPING" && (
+              <IntentContainerGrid_v2 />
+            )}
+            {substance_to_render === "ONBOARDING" && <OnBoardingGrid />}
             {/* </Grid> */}
             <Copyright sx={{ pt: 4 }} />
           </Container>
