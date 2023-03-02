@@ -21,7 +21,10 @@ export default function RenderMainIntentGraph({
 }) {
   console.log(data_to_plot);
   let bar_chart = (
-    <BarChart data={data_to_plot}>
+    <BarChart
+      data={data_to_plot}
+      onClick={(e) => handleClickPassedFromParent(e)}
+    >
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="name" interval={interval == 0 ? null : interval} />
       <YAxis />

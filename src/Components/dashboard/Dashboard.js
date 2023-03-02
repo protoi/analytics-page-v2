@@ -178,7 +178,7 @@ function DashboardContent({ substance_to_render }) {
           <Toolbar />
           <Container
             maxWidth="lg"
-            sx={{ mt: 4, mb: 4, outline: "1px solid green" }}
+            sx={{ mt: 4, mb: 4 }}
           >
             {/* <Grid container spacing={3} sx={{height: "100%", overflow: "auto", outline: "1px green solid"}}> */}
             {substance_to_render === "TIME_MAPPING" && <GraphContainer />}
@@ -186,9 +186,9 @@ function DashboardContent({ substance_to_render }) {
               <IntentContainerGrid_v2 />
             )}
             {substance_to_render === "ONBOARDING" && <OnBoardingGrid />}
-            {/* </Grid> */}
-            <Copyright sx={{ pt: 4 }} />
+          {/* <Copyright sx={{ pt: 4 }} /> */}
           </Container>
+          <Copyright sx={{ pt: 4 }} />
         </Box>
       </Box>
     </ThemeProvider>
