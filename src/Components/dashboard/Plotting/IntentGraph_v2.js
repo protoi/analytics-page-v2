@@ -30,13 +30,15 @@ function color_maker(hexval, offset) {
   return `#${((hexval + offset * 8 + offset * 4) % 16777216).toString(16)}`;
 }
 async function fetch_template_data(url, setter) {
-  fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  })
-    .then((d) => d.json())
+  // fetch(url, {
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Accept: "application/json",
+  //   },
+  // })
+  axios
+    .get(url)
+    .then((d) => d.data)
     .then((d_json) => {
       console.log("_______________________");
       console.log(d_json);
@@ -87,10 +89,22 @@ export function IntentContainerGrid_v2() {
 
   //Effects
   useEffect(() => {
-    fetch_template_data("./datagen/actordata.json", setActorData);
-    fetch_template_data("./datagen/genredata.json", setGenreData);
-    fetch_template_data("./datagen/moviedata.json", setMovieData);
-    fetch_template_data("./datagen/intentdata.json", setData);
+    fetch_template_data(
+      "https://movie-query-tsx.vercel.app/query/get_actor_frequencies",
+      setActorData
+    );
+    fetch_template_data(
+      "https://movie-query-tsx.vercel.app/query/get_movie_frequencies",
+      setGenreData
+    );
+    fetch_template_data(
+      "https://movie-query-tsx.vercel.app/query/get_movie_frequencies",
+      setMovieData
+    );
+    fetch_template_data(
+      "https://movie-query-tsx.vercel.app/query/group_documents_by_intents",
+      setData
+    );
   }, []);
 
   //click handlers
