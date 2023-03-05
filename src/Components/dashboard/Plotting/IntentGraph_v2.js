@@ -26,6 +26,9 @@ import {
   RenderGenreDataTable,
   RenderMovieDataTable,
   RenderPlotDataTable,
+  RenderErrorDataTable,
+  RenderGreetingDataTable,
+  RenderMovieYearDataTable
 } from "./RenderSecondaryIntentGraph";
 function color_maker(hexval, offset) {
   return `#${((hexval + offset * 8 + offset * 4) % 16777216).toString(16)}`;
@@ -118,6 +121,10 @@ export function IntentContainerGrid_v2() {
       "https://movie-query-tsx.vercel.app/query/get_movie_frequencies",
       setMovieData
     );
+    fetch_template_data(
+      "https://movie-query-tsx.vercel.app/query/get_release_year_frequencies",
+      setMovieYearData
+    );
     fetch_template_data_for_intents(
       "https://movie-query-tsx.vercel.app/query/group_documents_by_intents",
       setData
@@ -187,6 +194,33 @@ export function IntentContainerGrid_v2() {
             title_text={"Plot Searches"}
             // x_axis_param={"name"}
             // y_axis_param={"count"}
+            handleClickPassedFromParent={handleIntentSelectionClick}
+          />
+        )}
+        {genreData && stateOfGraph === "GREETINGS" && (
+          <RenderGreetingDataTable
+            // data_to_plot={genreData}
+            title_text={"Greetings"}
+            // x_axis_param={"name"}
+            // y_axis_param={"count"}
+            handleClickPassedFromParent={handleIntentSelectionClick}
+          />
+        )}
+        {genreData && stateOfGraph === "ERROR" && (
+          <RenderErrorDataTable
+            // data_to_plot={genreData}
+            title_text={"Error Encountered"}
+            // x_axis_param={"name"}
+            // y_axis_param={"count"}
+            handleClickPassedFromParent={handleIntentSelectionClick}
+          />
+        )}
+        {genreData && stateOfGraph === "MOVIE_YEAR" && (
+          <RenderMovieYearDataTable
+            data_to_plot={movieYearData}
+            title_text={"Year Searches"}
+            x_axis_param={"name"}
+            y_axis_param={"count"}
             handleClickPassedFromParent={handleIntentSelectionClick}
           />
         )}
