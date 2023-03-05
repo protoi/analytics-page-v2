@@ -1,6 +1,7 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import axios from "axios";
 import {
   BarChart,
   Bar,
@@ -12,6 +13,7 @@ import {
   Legend,
 } from "recharts";
 import Title from "../Title";
+import { GenerateDataCard } from "./GenerateDataCard";
 
 const actor_columns = [
   { field: "name", headerName: "Name", flex: 1.5 },
@@ -41,6 +43,17 @@ const movie_columns = [
   },
 ];
 
+async function fetch_template_data_get_breakdown(url, setter) {
+  axios
+    .get(url)
+    .then((d) => d.data)
+    .then((d_json_restruct) => {
+      console.log(d_json_restruct);
+      setter(d_json_restruct);
+    })
+    .catch((e) => console.log(e.message));
+}
+
 export function RenderActorDataTable({
   data_to_plot,
   x_axis_param,
@@ -52,9 +65,12 @@ export function RenderActorDataTable({
   const [detailsToRender, setDetailsToRender] = useState(null);
   const [keyToRender, setKeyToRender] = useState(null);
 
-  function fetch_detailed_data(key) {
-    return "hello world";
-  }
+  useEffect(() => {
+    fetch_template_data_get_breakdown(
+      `https://movie-query-tsx.vercel.app/query/get_breakdown?key=actor&value=${keyToRender}`,
+      setDetailsToRender
+    );
+  }, [keyToRender]);
 
   function handleActorRowClick(e) {
     console.log(e?.row?.name);
@@ -69,7 +85,6 @@ export function RenderActorDataTable({
       setDetailsToRender(null);
     } else {
       setKeyToRender(lookup_key);
-      setDetailsToRender(fetch_detailed_data(lookup_key));
     }
   }
 
@@ -80,7 +95,7 @@ export function RenderActorDataTable({
       }}
       rows={data_to_plot}
       columns={actor_columns}
-      pageSize={5}
+      // pageSize={5}
       rowsPerPageOptions={[5]}
       disableSelectionOnClick
       onRowClick={(e) => handleActorRowClick(e)}
@@ -115,7 +130,8 @@ export function RenderActorDataTable({
               height: "auto",
             }}
           >
-            <Title>{detailsToRender}</Title>
+            <Title>{keyToRender}</Title>
+            <GenerateDataCard dataToDisplay={detailsToRender} />
           </div>
         )}
       </div>
@@ -131,10 +147,31 @@ export function RenderGenreDataTable({
   interval = 0,
   handleClickPassedFromParent,
 }) {
+  const [detailsToRender, setDetailsToRender] = useState(null);
+  const [keyToRender, setKeyToRender] = useState(null);
+
+  useEffect(() => {
+    fetch_template_data_get_breakdown(
+      `https://movie-query-tsx.vercel.app/query/get_breakdown?key=genre&value=${keyToRender}`,
+      setDetailsToRender
+    );
+  }, [keyToRender]);
+
   function handleGenreRowClick(e) {
     console.log(e?.row?.name);
+    if (e === null || e.row === null) {
+      setKeyToRender(null);
+      setDetailsToRender(null);
+      return;
+    }
+    let lookup_key = e.row.name;
+    if (lookup_key === keyToRender) {
+      setKeyToRender(null);
+      setDetailsToRender(null);
+    } else {
+      setKeyToRender(lookup_key);
+    }
   }
-
   let data_grid = (
     <DataGrid
       sx={{
@@ -142,7 +179,7 @@ export function RenderGenreDataTable({
       }}
       rows={data_to_plot}
       columns={genre_columns}
-      pageSize={5}
+      // pageSize={5}
       rowsPerPageOptions={[5]}
       disableSelectionOnClick
       onRowClick={(e) => handleGenreRowClick(e)}
@@ -170,6 +207,17 @@ export function RenderGenreDataTable({
           <Title>{title_text}</Title>
           {data_grid}
         </div>
+        {keyToRender && (
+          <div
+            style={{
+              width: "40%",
+              height: "auto",
+            }}
+          >
+            <Title>{keyToRender}</Title>
+            <GenerateDataCard dataToDisplay={detailsToRender} />
+          </div>
+        )}
       </div>
     </Container>
   );
@@ -183,8 +231,30 @@ export function RenderMovieDataTable({
   interval = 0,
   handleClickPassedFromParent,
 }) {
+  const [detailsToRender, setDetailsToRender] = useState(null);
+  const [keyToRender, setKeyToRender] = useState(null);
+
+  useEffect(() => {
+    fetch_template_data_get_breakdown(
+      `https://movie-query-tsx.vercel.app/query/get_breakdown?key=moviename&value=${keyToRender}`,
+      setDetailsToRender
+    );
+  }, [keyToRender]);
+
   function handleMovieRowClick(e) {
     console.log(e?.row?.name);
+    if (e === null || e.row === null) {
+      setKeyToRender(null);
+      setDetailsToRender(null);
+      return;
+    }
+    let lookup_key = e.row.name;
+    if (lookup_key === keyToRender) {
+      setKeyToRender(null);
+      setDetailsToRender(null);
+    } else {
+      setKeyToRender(lookup_key);
+    }
   }
 
   let data_grid = (
@@ -194,7 +264,7 @@ export function RenderMovieDataTable({
       }}
       rows={data_to_plot}
       columns={actor_columns}
-      pageSize={5}
+      // pageSize={10}
       rowsPerPageOptions={[5]}
       disableSelectionOnClick
       onRowClick={(e) => handleMovieRowClick(e)}
@@ -222,6 +292,59 @@ export function RenderMovieDataTable({
           <Title>{title_text}</Title>
           {data_grid}
         </div>
+        {keyToRender && (
+          <div
+            style={{
+              width: "40%",
+              height: "auto",
+            }}
+          >
+            <Title>{keyToRender}</Title>
+            <GenerateDataCard dataToDisplay={detailsToRender} />
+          </div>
+        )}
+      </div>
+    </Container>
+  );
+}
+
+export function RenderPlotDataTable({
+  title_text,
+  interval = 0,
+  handleClickPassedFromParent,
+}) {
+  const [detailsToRender, setDetailsToRender] = useState(null);
+  const [keyToRender, setKeyToRender] = useState(true);
+
+  useEffect(() => {
+    fetch_template_data_get_breakdown(
+      `https://movie-query-tsx.vercel.app/query/get_breakdown?key=plot&value=`,
+      setDetailsToRender
+    );
+  }, []);
+
+  return (
+    <Container>
+      <div
+        style={{
+          display: "flex",
+          margin: "auto",
+          justifyContent: "center",
+          alignItems: "stretch",
+          height: "70vh",
+        }}
+      >
+        {keyToRender && detailsToRender && (
+          <div
+            style={{
+              width: "40%",
+              height: "auto",
+            }}
+          >
+            <Title>{keyToRender}</Title>
+            <GenerateDataCard dataToDisplay={detailsToRender} />
+          </div>
+        )}
       </div>
     </Container>
   );

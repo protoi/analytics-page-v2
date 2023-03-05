@@ -93,19 +93,21 @@ export function GraphContainer() {
           console.log(e.message);
         });
     }
-    /* axios
-      .get(
-        `https://movie-bot-backend-mkh6s9erg-ghutoon.vercel.app/query/group_queries_by_date_week?date=${yyyy_mm_dd_Date_string}`
-      )
-      .then((res) => {
-        console.dir(res, { depth: null });
-        setData(res.data);
-        return res;
-      })
-      .catch((err) => {
-        console.log(err.message);
-      }); */
-    fetch_JSON_data();
+    async function fetch_template_data_for_time_graph(url, setter) {
+      axios
+        .get(url)
+        .then((d) => d.data)
+        .then((d_json_restruct) => {
+          setter(d_json_restruct);
+        })
+        .catch((e) => console.log(e.message));
+    }
+
+    // fetch_JSON_data();
+    fetch_template_data_for_time_graph(
+      "https://movie-query-tsx.vercel.app/query/group_documents_yearly_monthly_and_daily",
+      setData
+    );
   }, [dateSelected]);
 
   function handleWeeklyGraphClickedIndex(index) {

@@ -10,6 +10,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export function GenerateDataCard({ dataToDisplay }) {
+  if (dataToDisplay === null) return <></>;
   console.log(dataToDisplay);
   return (
     <Paper
@@ -45,13 +46,15 @@ export function GenerateDataCard({ dataToDisplay }) {
             msg_response = element.Response_Body,
             msg_phone_num = element.Destination_Phone_number,
             msg_score = element.EntityIntent_tuple.score;
-          let card_fgcolor =
-              msg_intent === "message.error" ? "#d9825f" : "#42a5f5",
-            card_bgcolor =
-              msg_intent === "message.error" ? "orange" : "#1976d2";
+          let card_fgcolor, card_bgcolor;
 
           if (element.EntityIntent_tuple != null) {
             msg_intent = element.EntityIntent_tuple.intents;
+            card_fgcolor =
+              msg_intent === "message.error" ? "#d9825f" : "#42a5f5";
+            card_bgcolor =
+              msg_intent === "message.error" ? "orange" : "#1976d2";
+
             msg_genres =
               element.EntityIntent_tuple.entities.genre !== null
                 ? element.EntityIntent_tuple.entities.genre.join(", ")
@@ -118,7 +121,10 @@ export function GenerateDataCard({ dataToDisplay }) {
                           <u>Intent: </u> {msg_intent}
                           <br />
                           <u>Probability: </u>{" "}
-                          {msg_score.slice(0, Math.min(msg_score.length, 4))}
+                          {(msg_score + "").slice(
+                            0,
+                            Math.min(msg_score.length, 4)
+                          )}
                         </p>
                         <p>
                           <u>Time Stamp:</u>

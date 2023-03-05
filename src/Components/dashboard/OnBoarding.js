@@ -19,23 +19,21 @@ export function OnBoarding() {
     );
 
   useEffect(() => {
-    setTimeout(() => {
-      axios
-        .get(
-          "https://movie-bot-backend-26orzciwg-ghutoon.vercel.app/onboarding/get_onboarding_qrcode"
-        )
-        .then((res) => {
-          // console.log(res);
-          return res.data;
-        })
-        .then((data) => {
-          console.log(data);
-          setPosts(data);
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-    }, 5000);
+    axios
+      .get(
+        "https://movie-bot-backend-26orzciwg-ghutoon.vercel.app/onboarding/get_onboarding_qrcode"
+      )
+      .then((res) => {
+        // console.log(res);
+        return res.data;
+      })
+      .then((data) => {
+        console.log(data);
+        setPosts(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   }, []);
 
   return <>{data_to_render}</>;

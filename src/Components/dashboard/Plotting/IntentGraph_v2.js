@@ -25,17 +25,12 @@ import {
   RenderActorDataTable,
   RenderGenreDataTable,
   RenderMovieDataTable,
+  RenderPlotDataTable,
 } from "./RenderSecondaryIntentGraph";
 function color_maker(hexval, offset) {
   return `#${((hexval + offset * 8 + offset * 4) % 16777216).toString(16)}`;
 }
 async function fetch_template_data(url, setter) {
-  // fetch(url, {
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     Accept: "application/json",
-  //   },
-  // })
   axios
     .get(url)
     .then((d) => d.data)
@@ -59,6 +54,28 @@ async function fetch_template_data(url, setter) {
     .catch((e) => console.log(e.message));
 }
 
+async function fetch_template_data_for_intents(url, setter) {
+  axios
+    .get(url)
+    .then((d) => d.data)
+    .then((d_json) => {
+      console.log("_______________________");
+      console.log(d_json);
+      console.log("_______________________");
+
+      return d_json.map((key, index) => {
+        return {
+          id: index,
+          name: key._id,
+          count: key.count,
+        };
+      });
+    })
+    .then((d_json_restruct) => {
+      setter(d_json_restruct);
+    })
+    .catch((e) => console.log(e.message));
+}
 const intent_back_references = {
   ERROR: "INTENT",
   ACTOR: "INTENT",
@@ -94,14 +111,14 @@ export function IntentContainerGrid_v2() {
       setActorData
     );
     fetch_template_data(
-      "https://movie-query-tsx.vercel.app/query/get_movie_frequencies",
+      "https://movie-query-tsx.vercel.app/query/get_genre_frequencies",
       setGenreData
     );
     fetch_template_data(
       "https://movie-query-tsx.vercel.app/query/get_movie_frequencies",
       setMovieData
     );
-    fetch_template_data(
+    fetch_template_data_for_intents(
       "https://movie-query-tsx.vercel.app/query/group_documents_by_intents",
       setData
     );
@@ -161,6 +178,15 @@ export function IntentContainerGrid_v2() {
             title_text={"Genre Searches"}
             x_axis_param={"name"}
             y_axis_param={"count"}
+            handleClickPassedFromParent={handleIntentSelectionClick}
+          />
+        )}
+        {genreData && stateOfGraph === "PLOT" && (
+          <RenderPlotDataTable
+            // data_to_plot={genreData}
+            title_text={"Plot Searches"}
+            // x_axis_param={"name"}
+            // y_axis_param={"count"}
             handleClickPassedFromParent={handleIntentSelectionClick}
           />
         )}
